@@ -1,14 +1,23 @@
-import React, { useContext } from "react";
-import { CartContext } from "../NOTIMP/context/CartContext";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addToCart,
+  removeFromCart,
+  clearCart,
+  selectCartTotal,
+} from "../features/cart/cartSlice";
+import { Link } from "react-router-dom";
 
 const Cart = () => {
-  const { cart, removeFromCart, clearCart, addToCart } =
-    useContext(CartContext);
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.cartItems);
 
-  const totalValue = cart.reduce(
-    (sum, product) => sum + product.price * product.quantity,
-    0
-  );
+  const totalVal = useSelector(selectCartTotal);
+
+  // const totalValue = cartItems.reduce(
+  //   (sum, product) => sum + product.price * product.quantity,
+  //   0
+  // );
 
   // console.log(totalValue);
 
@@ -16,7 +25,7 @@ const Cart = () => {
     <div className="px-3">
       <h3 className="font-bold text-3xl">CartItems</h3>
       <div className="">
-        {cart.map((product, index) => (
+        {cartItems.map((product, index) => (
           <div
             key={index}
             className="border shadow-md p-3 mb-2 flex justify-around"
@@ -30,14 +39,14 @@ const Cart = () => {
             <div className="flex items-center gap-2">
               <button
                 className="bg-green-300 px-2 rounded-2xl font-extrabold "
-                onClick={() => removeFromCart(product)}
+                onClick={() => dispatch(removeFromCart(product))}
               >
                 -
               </button>
               <p> {product.quantity}</p>
               <button
                 className="bg-blue-300 px-2 rounded-2xl font-extrabold"
-                onClick={() => addToCart(product)}
+                onClick={() => dispatch(addToCart(product))}
               >
                 +
               </button>
@@ -46,7 +55,13 @@ const Cart = () => {
         ))}
       </div>
       <div className="mt-6 font-bold">
-        Total cart Value is : {totalValue.toFixed(2)}
+        Total cart Value is : {totalVal.toFixed(2)}
+      </div>
+      <div>
+        GO to checkOut Page:{" "}
+        <button className="bg-red-400 px-3 py-1 m-2" >
+          <Link to={'/payment'} >Checkout</Link>
+        </button>
       </div>
     </div>
   );

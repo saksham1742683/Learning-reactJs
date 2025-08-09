@@ -1,30 +1,46 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  value: 0,
-}
+  cartItems: JSON.parse(localStorage.getItem("cart")) || [],
+};
 
-export const counterSlice = createSlice({
-  name: 'counter',
+export const cartSlice = createSlice({
+  name: "cart",
   initialState,
   reducers: {
-    increment: (state) => {
-      // Redux Toolkit allows us to write "mutating" logic in reducers. It
-      // doesn't actually mutate the state because it uses the Immer library,
-      // which detects changes to a "draft state" and produces a brand new
-      // immutable state based off those changes
-      state.value += 1
+    addToCart: (state, action) => {
+      const item = action.payload;
+      const existing = state.cartItems.find((i) => i.id === item.id);
+
+      existing
+        ? (existing.quantity += 1)
+        : state.cartItems.push({ ...item, quantity: 1 });
+
+      localStorage.setItem("cart", JSON.stringify(state.cartItems));
     },
-    decrement: (state) => {
-      state.value -= 1
+    removeFromCart: (state, action) => {
+      const item = action.payload;
+      const existing = state.cartItems.find((i) => i.id === item.id);
+
+      existing.quantity > 1
+        ? (existing.quantity -= 1)
+        : (state.cartItems = state.cartItems.filter((i) => i.id !== item.id));
+      localStorage.setItem("cart", JSON.stringify(state.cartItems));
     },
-    incrementByAmount: (state, action) => {
-      state.value += action.payload
+    clearCart: (state) => {
+      state.cartItems = [];
+      localStorage.setItem("cart", JSON.stringify(state.cartItems));
     },
   },
-})
+});
 
 // Action creators are generated for each case reducer function
-export const { increment, decrement, incrementByAmount } = counterSlice.actions
+export const { addToCart, removeFromCart, clearCart } = cartSlice.actions;
 
-export default counterSlice.reducer
+export const selectCartTotal = (state) =>
+  state.cart.cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
+
+export default cartSlice.reducer;
