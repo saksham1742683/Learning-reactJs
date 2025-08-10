@@ -4,7 +4,8 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { useDispatch } from "react-redux";
 import { setUser } from "../features/auth/authSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import TechStackBox from "../components/TechStackBox";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -14,7 +15,11 @@ const Signup = () => {
 
   const handleSignup = async () => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       dispatch(setUser(userCredential.user));
       navigate("/");
     } catch (error) {
@@ -23,28 +28,43 @@ const Signup = () => {
   };
 
   return (
-    <div className="max-w-sm mx-auto p-6 shadow-lg">
-      <h2 className="text-2xl font-bold mb-4">Sign Up</h2>
-      <input
-        type="email"
-        placeholder="Email"
-        className="border p-2 w-full mb-3"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        className="border p-2 w-full mb-3"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button
-        onClick={handleSignup}
-        className="bg-blue-500 text-white p-2 w-full"
-      >
-        Sign Up
-      </button>
+    <div className="flex justify-center items-center min-h-screen bg-gray-50 px-4">
+      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
+          Sign Up
+        </h2>
+
+        <input
+          type="email"
+          placeholder="Email"
+          className="border border-gray-300 rounded-lg px-4 py-2 w-full mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          className="border border-gray-300 rounded-lg px-4 py-2 w-full mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button
+          onClick={handleSignup}
+          className="bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg w-full transition duration-200"
+        >
+          Sign Up
+        </button>
+
+        <p className="text-center my-4 text-sm text-gray-600 ">
+          Already have an account?{" "}
+          <Link to="/login" className="text-blue-500 hover:underline">
+            Login
+          </Link>
+        </p>
+        <TechStackBox />
+      </div>
     </div>
   );
 };

@@ -6,7 +6,6 @@ const Home = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [debouncedSearch, setDebouncedSearch] = useState("");
-
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 8;
 
@@ -21,7 +20,6 @@ const Home = () => {
       setProducts(data);
       setLoading(false);
     }
-    console.log("log from home 20 ", data);
   };
 
   useEffect(() => {
@@ -32,7 +30,6 @@ const Home = () => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
     }, 500);
-
     return () => {
       clearTimeout(handler);
     };
@@ -51,38 +48,42 @@ const Home = () => {
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
   return (
-    <div className="px-5">
-      <h2 className="font-bold text-2xl mb-4">Products</h2>
+    <div className="px-3 sm:px-5">
+      <h2 className="font-bold text-xl sm:text-2xl mb-4">Products</h2>
+
       {loading ? (
-        <div className="flex justify-center font-bold text-2xl w-full">
-          {" "}
-          Loading ....
+        <div className="flex justify-center font-bold text-lg sm:text-2xl w-full">
+          Loading...
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {currentProducts.map((product) => (
             <div
               key={product.id}
-              className="border border-sky-300 rounded-xl p-4 shadow-md h-80 flex flex-col justify-between"
+              className="border border-gray-300  bg-white rounded-xl p-3 sm:p-4 shadow-md flex flex-col justify-between"
             >
-              <p>{product.title}</p>
-              <p>{product.id}</p>
+              <p className="text-sm  text-gray-800sm:text-base font-semibold line-clamp-2">
+                {product.title}
+              </p>
               <img
                 src={product.image}
-                alt="Image"
-                className="w-32 h-32  object-contain"
+                alt="Product"
+                className="w-full max-w-[150px] sm:max-w-[200px] h-32 sm:h-40 object-contain mx-auto"
               />
-              <p>{product.price}</p>
-              <div className=" flex  gap-4 ">
-                <button className=" cursor-pointer px-6 py-2 bg-green-300 text-white font-semibold rounded-l-lg">
-                  {" "}
-                  Buy now
-                </button>
+              <p className="font-bold text-lg sm:text-xl text-emerald-600">
+                ₹{product.price}
+              </p>
 
+              <div className="flex flex-col sm:flex-row gap-2 mt-2">
                 <button
                   onClick={() => dispatch(addToCart(product))}
-                  className=" cursor-pointer px-6 py-2 bg-orange-300 text-white font-semibold rounded-r-lg  hover:scale-110
-             active:scale-95"
+                  className="cursor-pointer px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg text-sm sm:text-base"
+                >
+                  Buy Now
+                </button>
+                <button
+                  onClick={() => dispatch(addToCart(product))}
+                  className="cursor-pointer px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg text-sm sm:text-base"
                 >
                   {cartItems.some((item) => item.id === product.id)
                     ? "Add More"
@@ -93,7 +94,9 @@ const Home = () => {
           ))}
         </div>
       )}
-      <div className="flex justify-center my-4 gap-2">
+
+      {/* Pagination */}
+      <div className="flex flex-wrap justify-center my-4 gap-2">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}

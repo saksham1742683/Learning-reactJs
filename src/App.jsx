@@ -9,19 +9,24 @@ import Signup from "./pages/Signup";
 
 import PrivateRoute from "./components/PrivateRoute";
 import { Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
     <>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* Protected Route */}
+        <Route element={<PrivateRoute />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/payment" element={<Payment />} />
+        </Route>
+        {/* 
+        Protected Route
         <Route
           path="/payment"
           element={
@@ -29,8 +34,9 @@ function App() {
               <Payment />
             </PrivateRoute>
           }
-        />
+        /> */}
       </Routes>
+       <ToastContainer position="top-right" autoClose={3000} theme="colored" />
     </>
   );
 }

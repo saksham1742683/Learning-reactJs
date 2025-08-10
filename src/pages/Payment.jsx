@@ -17,14 +17,71 @@ const Payment = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handlePayment = () => {
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (document.getElementById("razorpay-script")) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement("script");
+      script.id = "razorpay-script";
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => {
+        resolve(true);
+      };
+      script.onerror = () => {
+        resolve(false);
+      };
+      document.body.appendChild(script);
+    });
+  };
+
+  const handlePayment = async () => {
     if (!form.name || !form.email || !form.phone || !form.address) {
       alert("Please fill all details before proceeding.");
       return;
     }
-    // alert(Order placed! Total: ₹${totalCartValue});
-    alert(`Order placed! Total: ₹${totalCartValue}`);
 
+    if (form.paymentMethod === "cod") {
+      alert(`Order placed! Total: ₹${totalCartValue} (Cash on Delivery)`);
+      // Further COD logic here
+      return;
+    }
+
+    // For online payments
+    const res = await loadRazorpayScript();
+
+    if (!res) {
+      alert("Failed to load payment gateway. Please try again later.");
+      return;
+    }
+
+    const options = {
+      key: "rzp_live_HSedkPpLdin06f", // <-- quotes added
+      amount: totalCartValue * 100, // Amount in paise (₹)
+      currency: "INR",
+      name: "Your Store Name",
+      description: "Order Payment",
+      prefill: {
+        name: form.name,
+        email: form.email,
+        contact: form.phone,
+      },
+      handler: function (response) {
+        alert(
+          `Payment successful! Payment ID: ${response.razorpay_payment_id}`
+        );
+        // You can send payment confirmation & order details to your backend here
+      },
+      modal: {
+        ondismiss: function () {
+          alert("Payment popup closed. You can try again.");
+        },
+      },
+    };
+
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
   };
 
   return (
@@ -92,9 +149,7 @@ const Payment = () => {
 
       {/* Order Summary */}
       <div className="mb-4">
-        <p className="text-lg font-semibold">
-          Total Amount: ₹{totalCartValue}
-        </p>
+        <p className="text-lg font-semibold">Total Amount: ₹{totalCartValue}</p>
       </div>
 
       {/* Pay Button */}
